@@ -1,0 +1,6 @@
+# QLoRA fine-tuning dependencies. Installed only when we reach the
+# training phase, on top of requirements.txt. Keeping these separate
+# means the inference/API environment doesn't carry training baggage.
+
+peft>=0.14,<0.18
+trl>=0.15,<0.21

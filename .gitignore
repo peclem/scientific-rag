@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Env / secrets
+.env
+*.local
+
+# Data and model artifacts (too big / not source)
+data/raw_pdfs/*
+data/processed/*
+!data/raw_pdfs/.gitkeep
+!data/processed/.gitkeep
+chroma_db/*
+!chroma_db/.gitkeep
+models/
+adapters/
+*.gguf
+*.safetensors
+
+# Logs and reports
+logs/
+*.log
+evaluation/reports/*
+!evaluation/reports/.gitkeep
+
+# OS
+.DS_Store
+
+# Internal planning scratch (not part of the deliverable)
+ROADMAP.md

@@ -1,0 +1,54 @@
+# Runtime stack for the RAG system (parsing, retrieval, generation, API).
+# torch is intentionally NOT pinned here: this box already has
+# torch 2.7.1+cu126 working against the GPU, and I don't want pip
+# to pull a different CUDA build and break things. Install torch
+# separately if you set this up on a fresh machine.
+#
+# Training-only libs (peft, trl) live in requirements-train.txt so the
+# base environment stays lean until the fine-tuning phase.
+#
+# Version floors are picked for known-stable releases (e.g. transformers
+# >=4.51 is the first with Qwen3 support); upper bounds guard against
+# surprise major bumps.
+
+# LLM + 4-bit inference
+transformers>=4.51,<4.56
+accelerate>=1.4,<2.0
+bitsandbytes>=0.45,<0.49
+sentencepiece>=0.2.0
+safetensors>=0.4.5
+
+# Embeddings + reranking (bge-m3, bge-reranker-v2-m3)
+FlagEmbedding>=1.3,<2.0
+sentence-transformers>=3.4,<5.0
+
+# Vector store + lexical retrieval
+chromadb>=0.6,<0.7
+rank-bm25>=0.2.2,<0.3
+
+# Orchestration
+langchain>=0.3,<0.4
+langchain-community>=0.3,<0.4
+
+# PDF parsing (GROBID client is called over HTTP; pymupdf is the fallback)
+pymupdf>=1.25,<2.0
+lxml>=5.3
+
+# API
+fastapi>=0.115,<0.120
+uvicorn[standard]>=0.34,<0.40
+pydantic>=2.10,<3.0
+pydantic-settings>=2.7,<3.0
+python-multipart>=0.0.18
+
+# Datasets (QASPER, SciFact, PubMedQA) + eval metrics
+datasets>=3.2,<4.0
+rouge-score>=0.1.2
+bert-score>=0.3.13
+
+# Utilities
+loguru>=0.7,<0.8
+httpx>=0.27
+tqdm>=4.67
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0
