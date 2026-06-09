@@ -78,15 +78,15 @@ Run on 25 QASPER questions. The judge is the base model scoring all cells.
 | FT | 3.77 | 0.00 | 0.00 | 0.076 |
 | FT + RAG | 3.18 | 1.00 | 0.13 | 0.142 |
 
-The naive reading of this table is wrong, and understanding why is the actual result.
+At first glance this says the base model with no retrieval is the best, which is not what is actually going on, so it needs some explaining.
 
-1. **RAG is the clear win for real question answering.** It is the only thing that lets the system cite (precision 0 to 1.00) and ground its answers (NLI faithfulness 0 to 0.28). Without retrieval the model can only abstain.
+For the base and FT rows, the judge is mostly rewarding the model for not answering. With no context the model says it cannot answer the question, and the judge scores that highly because an honest refusal is technically faithful and well formatted. So those high numbers are not really about answer quality. It also does not help that the judge is the same base model, so it leans toward answers that sound like its own. That is the circularity I expected when I picked a local judge instead of an external one. Between those two things, I would not read the judge column as a ranking across the RAG and no RAG cells.
 
-2. **The judge ranking is confounded, and that is the main lesson.** For a question with no context, the base model correctly refuses to answer, and the judge rewards the honest refusal with full marks. So the high "base" score is mostly reward for declining, not for good answers. On top of that the judge is the base model, so it has a self preference for base style outputs (the circularity I flagged when choosing a local judge). The judge column cannot be read as a quality ranking across RAG and non RAG cells.
+What I do trust here is the citation and grounding columns. Only the RAG cells have retrieved context to cite, and they go from nothing usable to perfect citation precision, with NLI faithfulness moving the same way. That is the part I actually care about and it is a clear point for retrieval.
 
-3. **Fine tuning changed format, not knowledge.** The adapter was trained on terse, extractive QASPER reference answers, and it pushed outputs toward that style (ROUGE rises, highest at FT+RAG). But that terseness lowered judged completeness and grounding. So this adapter traded verbosity for reference similarity rather than improving answers. That lines up with the going in hypothesis: RAG carries the system, fine tuning mostly shifts style.
+The fine tuning result was a bit of a letdown. The adapter picked up the style of the QASPER reference answers, which are short and extractive, so its answers got terser and the ROUGE score went up because they look more like the references. But the shorter answers also scored lower on completeness and grounding, so it did not really make the answers better, it mostly made them shorter. That is roughly what I expected, that fine tuning on this kind of data teaches style and not facts, I just hoped it would help a bit more than it did.
 
-This is a more useful result than a clean "fine tuning plus RAG wins", because it surfaced two real evaluation pitfalls (abstention reward and judge self preference) and showed concretely that fine tuning data style propagates straight into the outputs.
+So retrieval is doing the real work here and the fine tuning mostly changed how the answers read. It is not the tidy "everything I added helped" story I would have liked, but figuring out why the judge was misleading and watching the training data style leak straight into the answers taught me more than a clean result would have.
 
 ### A note on the faithfulness metric
 
@@ -169,4 +169,4 @@ tests/        unit tests for the pure logic
 
 ## What I took away from it
 
-The biggest lesson was that the evaluation is harder and more important than the pipeline. Building hybrid retrieval with reranking and HyDE was the easy part. Getting trustworthy numbers, catching the prompt bug where the model invented page numbers, realizing the faithfulness metric was too strict, and understanding why the judge ranked an abstaining model highest, that is where I actually learned how these systems should be measured.
+Honestly, the pipeline itself was the easy part. Hybrid retrieval, the reranker, HyDE, those are mostly a case of connecting the right pieces. What actually took thought was the evaluation. Almost all of the bugs and surprises came from trying to get numbers I could trust: the prompt issue where the model made up page numbers, the faithfulness metric being too strict, and the judge scoring a model that refused to answer above one that answered properly. I went in expecting to spend my time on retrieval and ended up spending most of it on measurement, and that is probably where I learned the most.
