@@ -22,11 +22,11 @@ adapters/
 *.gguf
 *.safetensors
 
-# Logs and reports
+# Logs (runtime noise, not source)
 logs/
 *.log
-evaluation/reports/*
-!evaluation/reports/.gitkeep
+
+# Eval reports ARE kept: they hold the actual result numbers the README cites.
 
 # OS
 .DS_Store
