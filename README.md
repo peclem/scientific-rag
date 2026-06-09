@@ -10,10 +10,10 @@ You give it scientific papers (PDFs) and ask questions. It retrieves the relevan
 
 Main features:
 
-- PDF parsing that recovers sections and bibliographic metadata, not just raw text
+- PDF parsing that recovers sections and bibliographic metadata
 - Hybrid retrieval: dense vectors (bge-m3) plus BM25, combined with Reciprocal Rank Fusion
 - A cross encoder reranker (bge-reranker-v2-m3) for precision
-- HyDE query expansion, behind a switch because it is not a guaranteed win
+- HyDE query expansion behind a switch
 - Citation enforced answers from Qwen3-8B, with the citation tags checked against the retrieved context
 - An evaluation suite: retrieval metrics, citation precision, faithfulness, and an LLM judge
 - A QLoRA fine tuned adapter and a 2x2 experiment comparing fine tuning against retrieval
